@@ -7,13 +7,13 @@ ALLOWED = "allowed"
 FORBIDDEN = "forbidden"
 GRAVITY = 10
 
-regions = {ALLOWED: [(2, 2, 2, 11), (7, 2, 7, 11)], FORBIDDEN: [(3, 5, 6, 5), (3, 8, 6, 8)]}
+regions = {ALLOWED: [(2, 2, 2, 11), (7, 2, 7, 11), (9, 8, 13, 10) ], FORBIDDEN: [(3, 5, 6, 5), (3, 8, 6, 8), (1, 2, 3, 4)]}
 
 v_0min_val = 1
 v_0max_val = 30
 alpha_min_val = 1
 alpha_max_val = 89
-number_of_tries_val = 100000
+number_of_tries_val = 1000000
 
 # v_0_test, alpha_test = 9.85, 68
 # v_0_test, alpha_test = 12.013667928162864, 32.61695072706466
@@ -35,14 +35,15 @@ ax1.plot([alpha_max_val] * len(linspace_v_0), linspace_v_0, 'g')
 fig1.show()
 
 fig2, ax2 = plt.subplots()
-for throw in random.sample(throws, 5):
-    alpha_val, v_0_val = throw
-    x_max = middle_x_of_throw(v_0_val, alpha_val) * 2
-    x_space = np.linspace(0, x_max, 10000)
-    x_func = np.vectorize(quadratic_formula_from_throw(v_0_val, alpha_val))
-    y_space = x_func(x_space)
-    ax2.plot(x_space, y_space)
-    # print(f"{x_max}, {v_0_val}, {alpha_val}")
+if len(throws) >=5:
+    for throw in random.sample(throws, 5):
+        alpha_val, v_0_val = throw
+        x_max = middle_x_of_throw(v_0_val, alpha_val) * 2
+        x_space = np.linspace(0, x_max, 10000)
+        x_func = np.vectorize(quadratic_formula_from_throw(v_0_val, alpha_val))
+        y_space = x_func(x_space)
+        ax2.plot(x_space, y_space)
+        # print(f"{x_max}, {v_0_val}, {alpha_val}")
 for allowed in regions[ALLOWED]:
     region_x0, region_y0, region_x1, region_y1 = allowed
     ax2.plot([region_x0, region_x1], [region_y0, region_y1], "g")
