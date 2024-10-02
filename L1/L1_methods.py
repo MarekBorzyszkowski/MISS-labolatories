@@ -5,6 +5,7 @@ ALLOWED = "allowed"
 FORBIDDEN = "forbidden"
 GRAVITY = 10
 
+
 def random_test_in_regions(v_0min, v_0max, alpha_min, alpha_max, number_of_tries, regions):
     successes = []
     for _ in range(number_of_tries):
@@ -50,8 +51,9 @@ def is_line_segment_touching_parabola(x_middle, quadratic_func, line_segment):
     if (line_y0 - quadratic_func(line_x0)) * (line_y1 - quadratic_func(line_x1)) <= 0:
         return True
     if line_x0 < x_middle < line_x1:
-        y_of_line_in_middle_of_parabola = (line_y1 - line_y0)/(line_x1 - line_x0) * (x_middle - line_x0) + line_y0
-        if (line_y0 - quadratic_func(line_x0)) * (y_of_line_in_middle_of_parabola - quadratic_func(x_middle)) <= 0:
+        y_of_line_in_middle_of_parabola = (line_y1 - line_y0) / (line_x1 - line_x0) * (x_middle - line_x0) + line_y0
+        if (line_y0 - quadratic_func(line_x0)) * (y_of_line_in_middle_of_parabola - quadratic_func(x_middle)) <= 0 or (
+                line_y1 - quadratic_func(line_x1)) * (y_of_line_in_middle_of_parabola - quadratic_func(x_middle)) <= 0:
             return True
         else:
             return False

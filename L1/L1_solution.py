@@ -7,7 +7,7 @@ ALLOWED = "allowed"
 FORBIDDEN = "forbidden"
 GRAVITY = 10
 
-regions = {ALLOWED: [(2, 2, 2, 11), (7, 2, 7, 11), (9, 8, 13, 10) ], FORBIDDEN: [(3, 5, 6, 5), (3, 8, 6, 8), (1, 2, 3, 4)]}
+regions = {ALLOWED: [(2, 2, 2, 11), (7, 2, 7, 11) ], FORBIDDEN: [(3, 5, 6, 5), (3, 8, 6, 8)]}
 
 v_0min_val = 1
 v_0max_val = 30
