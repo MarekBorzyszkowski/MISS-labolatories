@@ -101,9 +101,9 @@ def print_bouncing_ball(surface, bounces):
 
 def calculate_bounce(p_0, v_0, se_params):
     t_1 = calculate_time_of_impact(p_0, v_0, se_params)
-    x_prim = calculate_x_in_time(x_0, v_x0, t_1)
-    y_prim = calculate_y_in_time(y_0, v_y0, t_1)
-    z_prim = calculate_z_in_time(z_0, v_z0, t_1)
+    x_prim = calculate_x_in_time(p_0[X], v_0[X], t_1)
+    y_prim = calculate_y_in_time(p_0[Y], v_0[Y], t_1)
+    z_prim = calculate_z_in_time(p_0[Z], v_0[Z], t_1)
     print(x_prim, y_prim, z_prim, t_1, x_prim ** 2 + y_prim ** 2)
     return Bounce(p_0, create_vector(x_prim, y_prim, z_prim), v_0, t_1)
 
@@ -112,12 +112,12 @@ def calculate_new_velocity(p_i, v_0, se_params, t_i):
     # -Ax^2 - Bx - Cy^2 - Dy - Exy - F + z = 0
     v_z = v_0[Z] - GRAVITY * t_i
     v_i_before = create_vector(v_0[X], v_0[Y], v_z)
-    N = create_vector(2 * se_params[A] * p_i[X] + se_params[B] + se_params[E] * p_i[Y],  # df/dx
-                      2 * se_params[C] * p_i[Y] + se_params[D] + se_params[E] * p_i[X],  # df/dy
-                      1)  # df/dz
+    N = create_vector((2 * se_params[A] * p_i[X] + se_params[B] + se_params[E] * p_i[Y]),  # df/dx
+                      (2 * se_params[C] * p_i[Y] + se_params[D] + se_params[E] * p_i[X]),  # df/dy
+                      -1)  # df/dz
     N_length = vector_module(N)
     n = multiply_vector(N, 1 / N_length)
-    return add_vectors(v_i_before, multiply_vector(n, -2 * dot_product(v_0, n)))
+    return add_vectors(v_i_before, multiply_vector(n, -2 * dot_product(v_i_before, n)))
 
 
 def bounce_ball(bounces_number, p_0, v_0, se_params):
@@ -133,5 +133,5 @@ def bounce_ball(bounces_number, p_0, v_0, se_params):
     return bounces
 
 
-calculated_bounces = bounce_ball(number_of_bounces,P_0, V_0, surface_equation_parameters)
+calculated_bounces = bounce_ball(number_of_bounces, P_0, V_0, surface_equation_parameters)
 print_bouncing_ball(surface_equation, calculated_bounces)
