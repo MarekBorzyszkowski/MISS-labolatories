@@ -50,15 +50,16 @@ def calculate_time_of_impact(p_0, v_0, se_params):
 
 
 def calculate_bounce(p_0, v_0, se_params):
-    t_1 = calculate_time_of_impact(p_0, v_0, se_params)
-    x_prim = calculate_x_in_time(p_0[X], v_0[X], t_1)
-    y_prim = calculate_y_in_time(p_0[Y], v_0[Y], t_1)
-    z_prim = calculate_z_in_time(p_0[Z], v_0[Z], t_1)
-    print(x_prim, y_prim, z_prim, t_1, x_prim ** 2 + y_prim ** 2)
-    return Bounce(p_0, create_vector(x_prim, y_prim, z_prim), v_0, t_1)
+    t_i = calculate_time_of_impact(p_0, v_0, se_params)
+    x_prim = calculate_x_in_time(p_0[X], v_0[X], t_i)
+    y_prim = calculate_y_in_time(p_0[Y], v_0[Y], t_i)
+    z_prim = calculate_z_in_time(p_0[Z], v_0[Z], t_i)
+    v_z_i = v_0[Z] - GRAVITY * t_i
+    v_i = create_vector(v_0[X], v_0[Y], v_z_i)
+    return Bounce(p_0, create_vector(x_prim, y_prim, z_prim), v_0, v_i, t_i)
 
 
-def calculate_new_velocity(p_i, v_0, se_params, t_i):
+def calculate_new_velocity(p_i, v_0, se_params, t_i, k):
     # -Ax^2 - Bx - Cy^2 - Dy - Exy - F + z = 0
     v_z = v_0[Z] - GRAVITY * t_i
     v_i_before = create_vector(v_0[X], v_0[Y], v_z)
@@ -67,17 +68,16 @@ def calculate_new_velocity(p_i, v_0, se_params, t_i):
                       -1)  # df/dz
     N_length = vector_module(N)
     n = multiply_vector(N, 1 / N_length)
-    return add_vectors(v_i_before, multiply_vector(n, -2 * dot_product(v_i_before, n)))
+    return multiply_vector(add_vectors(v_i_before, multiply_vector(n, -2 * dot_product(v_i_before, n))), k**(1/2))
 
 
-def bounce_ball(bounces_number, p_0, v_0, se_params):
+def bounce_ball(bounces_number, p_0, v_0, se_params, k):
     bounces = []
     current_p = p_0
     current_v = v_0
     for i in range(bounces_number):
-        print(current_p, current_v)
         bounce = calculate_bounce(current_p, current_v, se_params)
         current_p = bounce.point_i
-        current_v = calculate_new_velocity(current_p, current_v, se_params, bounce.t_i)
+        current_v = calculate_new_velocity(current_p, current_v, se_params, bounce.t_i, k)
         bounces.append(bounce)
     return bounces

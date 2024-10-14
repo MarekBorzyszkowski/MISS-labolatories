@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt, cm
 
 from L2.Bounce import Bounce
 from L2.bounce_calculations import calculate_x_in_time, calculate_y_in_time, calculate_z_in_time, bounce_ball, A, B, C, \
-    D, E, F
+    D, E, F, GRAVITY
 from L2.vector_methods import *
 
 mpl.use('qt5agg')
@@ -22,11 +22,19 @@ P_0 = create_vector(x_0, y_0, z_0)
 surface_equation = lambda x, y: (x ** 2 + y ** 2)
 surface_equation_parameters = {A: 1, B: 0, C: 1, D: 0, E: 0, F: 0}  # Ax^2 + Bx + Cy^2 + Dy + Exy + F
 
-k = 1
+m = 1
+k = 0.8
 plot_size = 15
 plot_density = 100
 bounce_resolution = 1000
 number_of_bounces = 5
+
+
+def print_result_table(bounces):
+    for bounce in bounces:
+        ek = m * (vector_module(bounce.velocity_i) ** 2) / 2
+        ep = m * GRAVITY * bounce.point_i[Z]
+        print(bounce.point_i[X], bounce.point_i[Y], bounce.point_i[Z], bounce.t_i, ek, ep, ek + ep)
 
 
 def print_bouncing_ball(surface, bounces):
@@ -54,5 +62,6 @@ def print_bouncing_ball(surface, bounces):
     plt.show(block=True)
 
 
-calculated_bounces = bounce_ball(number_of_bounces, P_0, V_0, surface_equation_parameters)
+calculated_bounces = bounce_ball(number_of_bounces, P_0, V_0, surface_equation_parameters, k)
+print_result_table(calculated_bounces)
 print_bouncing_ball(surface_equation, calculated_bounces)
