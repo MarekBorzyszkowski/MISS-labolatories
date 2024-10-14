@@ -1,11 +1,10 @@
-import numpy as np
 import matplotlib as mpl
+import numpy as np
 from matplotlib import pyplot as plt, cm
 
-from L2.Bounce import Bounce
 from L2.bounce_calculations import calculate_x_in_time, calculate_y_in_time, calculate_z_in_time, bounce_ball, A, B, C, \
     D, E, F, GRAVITY
-from L2.vector_methods import *
+from L2.vector_methods import create_vector, vector_module, X, Y, Z
 
 mpl.use('qt5agg')
 
