@@ -18,11 +18,17 @@ y_0 = 0
 z_0 = 200
 P_0 = create_vector(x_0, y_0, z_0)
 
-surface_equation = lambda x, y: (x ** 2 + y ** 2)
 surface_equation_parameters = {A: 1, B: 0, C: 1, D: 0, E: 0, F: 0}  # Ax^2 + Bx + Cy^2 + Dy + Exy + F
 
+surface_equation = lambda x, y: (surface_equation_parameters[A] * (x ** 2) +
+                                 surface_equation_parameters[B] * x +
+                                 surface_equation_parameters[C] * y ** 2 +
+                                 surface_equation_parameters[D] * y +
+                                 surface_equation_parameters[E] * x * y +
+                                 surface_equation_parameters[F])
+
 m = 1
-k = 0.8
+k = 1
 plot_size = 15
 plot_density = 100
 bounce_resolution = 1000
