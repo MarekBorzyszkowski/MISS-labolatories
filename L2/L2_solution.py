@@ -36,6 +36,7 @@ number_of_bounces = 5
 
 
 def print_result_table(bounces):
+    print('x_0\t\t\t\t', 'y_0\t\t\t\t', 'z_0\t\t\t\t', 'dt\t\t\t\t', 'E_k\t\t\t\t', 'E_p\t\t\t\t', 'E_total')
     for bounce in bounces:
         ek = m * (vector_module(bounce.velocity_i) ** 2) / 2
         ep = m * GRAVITY * bounce.point_i[Z]
