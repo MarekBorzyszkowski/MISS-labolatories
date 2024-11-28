@@ -13,7 +13,7 @@ v_0min_val = 1
 v_0max_val = 30
 alpha_min_val = 1
 alpha_max_val = 89
-number_of_tries_val = 1000000
+number_of_tries_val = 100000
 
 # v_0_test, alpha_test = 9.85, 68
 # v_0_test, alpha_test = 12.013667928162864, 32.61695072706466
