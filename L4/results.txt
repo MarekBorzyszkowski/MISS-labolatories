@@ -8,3 +8,6 @@ beta = 1.45, multiquadric
 max error = 0.01338603598640764
 mean error = 0.0012051908835128552
 
+
+Do rozwiązania problemu użyto metody rozwiązywania macierzowych układów równań zaimplementowanych w pakiecie numpy.
+Do wyliczenia wartości użyto mnożenia macierzy M przez wynikową macierz a.
