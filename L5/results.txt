@@ -1,0 +1,27 @@
+N = 10^i
+
+calculating integrals for i:  1
+hit miss:  3.6
+mean value:  3.5636851122979776
+calculating integrals for i:  2
+hit miss:  1.08
+mean value:  1.434683555776311
+calculating integrals for i:  3
+hit miss:  1.656
+mean value:  1.4424871890536501
+calculating integrals for i:  4
+hit miss:  1.2744
+mean value:  1.224032717954468
+calculating integrals for i:  5
+hit miss:  1.31796
+mean value:  1.3240292210290094
+calculating integrals for i:  6
+hit miss:  1.336824
+mean value:  1.3323884053927169
+calculating integrals for i:  7
+hit miss:  1.3337208
+mean value:  1.3320701677230147
+calculating integrals for i:  8
+hit miss:  1.33319088
+mean value:  1.3331894671437865
+Analytical integral val 1.3333333333333335

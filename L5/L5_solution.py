@@ -1,44 +1,82 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt, cm
+import matplotlib as mpl
 
+# mpl.use('qt5agg')
 np.random.seed(42)
 
-a = 0
-b = 1
-h = 3
-f_x = lambda x: np.exp(x)
-F_x = lambda x: np.exp(x)
-condition_checker = lambda y, y_real: y <= y_real
+OUTSIDE_CURVE = 0
+INSIDE_CURVE_POSITIVE = 1
+INSIDE_CURVE_NEGATIVE = 2
+
+x_a, x_b = -1.0, 1.0
+y_a, y_b = 0.0, 2.0
+z_a, z_b = -3.5, 5.5
+f_x = lambda x, y: x * x + x * y * y
+F_x_integral = lambda x_a, x_b, y_a, y_b: ((x_b ** 3) * y_b / 3.0 + (x_b ** 2) * (y_b ** 3) / 6.0 -
+                                           (((x_a ** 3) * y_b / 3.0) + (x_a ** 2) * (y_b ** 3) / 6.0) -
+                                           (((x_b ** 3) * y_a / 3.0) + (x_b ** 2) * (y_a ** 3) / 6.0) +
+                                           (((x_a ** 3) * y_a / 3.0) + (x_a ** 2) * (y_a ** 3) / 6.0))
 
 
-def plot_curve_with_points(points_over_curve, points_le_curve):
-    number_of_samples = 10 ** 4
-    linspace_angle = np.linspace(a, b, number_of_samples)
-    linspace_v_0 = np.linspace(0, h, number_of_samples)
-    fig1, ax1 = plt.subplots()
-    ax1.set_xlim([a - 1, b + 1])
-    ax1.set_ylim([-1, h + 1])
-    ax1.set_xlabel('x')
-    ax1.set_ylabel('y')
-    ax1.plot(*zip(*points_le_curve), "b.")
-    ax1.plot(*zip(*points_over_curve), "r.")
-    ax1.plot(linspace_angle, f_x(linspace_angle), "g")
-    ax1.plot(linspace_angle, [0] * len(linspace_angle), 'g')
-    ax1.plot(linspace_angle, [h] * len(linspace_angle), 'g')
-    ax1.plot([a] * len(linspace_v_0), linspace_v_0, 'g')
-    ax1.plot([b] * len(linspace_v_0), linspace_v_0, 'g')
-    fig1.show()
+def condition_checker(z, z_real):
+    in_p, in_n, outside = [],[],[]
+    for z_val, z_real_val in zip(z, z_real):
+        if z_val >= 0:
+            if z_val <= z_real_val:
+                in_p.append(True)
+                in_n.append(False)
+                outside.append(False)
+            else:
+                in_p.append(False)
+                in_n.append(False)
+                outside.append(True)
+        else:
+            if z_val >= z_real_val:
+                in_p.append(False)
+                in_n.append(True)
+                outside.append(False)
+            else:
+                in_p.append(False)
+                in_n.append(False)
+                outside.append(True)
+    return in_p, in_n, outside
+
+def plot_curve_with_points(points_outside_curve, points_inside_le_curve, points_inside_gt_curve):
+    number_of_samples = 10 ** 1
+    linspace_x = np.linspace(x_a, x_b, number_of_samples)
+    linspace_y = np.linspace(y_a, y_b, number_of_samples)
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.set_xlim([x_a - 1, x_b + 1])
+    ax.set_ylim([y_a - 1, y_b + 1])
+    ax.set_zlim([z_a - 1, z_b + 1])
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    if len(points_inside_le_curve)>0:
+        ax.scatter(*zip(*points_inside_le_curve), color='b', marker='o', s=2)
+    if len(points_inside_gt_curve) > 0:
+        ax.scatter(*zip(*points_inside_gt_curve), color='g', marker='o', s=2)
+    if len(points_outside_curve) > 0:
+        ax.scatter(*zip(*points_outside_curve), color='r', marker='o', s=2)
+    x_meshed, y_meshed = np.meshgrid(linspace_x, linspace_y)
+    z = np.array([f_x(linspace_x, np.array([y_val] * number_of_samples)) for y_val in linspace_y])
+    ax.plot_surface(x_meshed, y_meshed, z, cmap=cm.coolwarm, rstride=1, cstride=1, alpha=0.6)
+    plt.show(block=True)
 
 
-def plot_error(errors, N_vals, title):
+def plot_error(errors_hm, error_mean, N_vals, title):
     fig2, ax2 = plt.subplots()
     ax2.set_title(title)
     ax2.set_xlabel('N')
     ax2.set_ylabel('error')
     ax2.set_xscale('log')
     ax2.set_yscale('log')
-    ax2.plot(N_vals, errors)
-    fig2.show()
+    ax2.plot(N_vals, errors_hm,  label='Hit and miss error')
+    ax2.plot(N_vals, errors_mean,  label='Mean error')
+    ax2.plot(N_vals, 1/np.sqrt(N_vals),  label='1/sqrt(N_vals)')
+    ax2.legend()
+    fig2.savefig(title.replace(" ", "_") + '.png')
 
 
 def calc_integrals(N_min, N_max):
@@ -47,28 +85,31 @@ def calc_integrals(N_min, N_max):
         print("calculating integrals for: ", i)
         N = 10 ** i
         N_vals.append(N)
-        x_random_samples = (b - a) * np.random.random_sample(N) + a
-        y_random_samples = (h - 0) * np.random.random_sample(N) + 0
-        f_x_sampled = f_x(x_random_samples)
-        points = np.vstack((x_random_samples, y_random_samples)).T
-        points_le_curve_condition = condition_checker(y_random_samples, f_x_sampled)
-        points_over_curve = points[~points_le_curve_condition]
-        points_le_curve = points[points_le_curve_condition]
-        N_b = len(points_le_curve)
-        hit_miss_integral = (b - a) * h * N_b / N
-        mean_val = np.mean(f_x_sampled) * (b - a)
+        x_random_samples = (x_b - x_a) * np.random.random_sample(N) + x_a
+        y_random_samples = (y_b - y_a) * np.random.random_sample(N) + y_a
+        z_random_samples = (z_b - z_a) * np.random.random_sample(N) + z_a
+        f_x_sampled = f_x(x_random_samples, y_random_samples)
+        points = np.vstack((x_random_samples, y_random_samples, z_random_samples)).T
+        in_p, in_n, outside = condition_checker(z_random_samples, f_x_sampled)
+        points_outside_curve = points[outside]
+        points_inside_le_curve = points[in_p]
+        points_inside_gt_curve = points[in_n]
+
+        N_b = len(points_inside_le_curve) - len(points_inside_gt_curve)
+        hit_miss_integral = (x_b - x_a) * (y_b - y_a) * (z_b - z_a) * N_b / N
+        mean_val = np.mean(f_x_sampled) * (x_b - x_a) * (y_b - y_a)
         print("hit miss: ", hit_miss_integral)
         print("mean value: ", mean_val)
         hit_mis_vals.append(hit_miss_integral)
         mean_integral_vals.append(mean_val)
-        if i < 5:
-            plot_curve_with_points(points_over_curve, points_le_curve)
+        if i < 4:
+            plot_curve_with_points(points_outside_curve, points_inside_le_curve, points_inside_gt_curve)
     return np.array(N_vals), np.array(hit_mis_vals), np.array(mean_integral_vals)
 
 
 N_array, hit_mis_array, mean_integral_array = calc_integrals(1, 8)
-integral_value = F_x(b) - F_x(a)
+integral_value = F_x_integral(x_a, x_b, y_a, y_b)
+print("Analytical integral val", integral_value)
 errors_hit_miss = abs(hit_mis_array - integral_value)
 errors_mean = abs(mean_integral_array - integral_value)
-plot_error(errors_hit_miss, N_array, "Hit miss algorithm absolute errors")
-plot_error(errors_mean, N_array, "Mean integral algorithm absolute errors")
+plot_error(errors_hit_miss, errors_mean, N_array, "Algorithms absolute errors")
